@@ -4,21 +4,13 @@ import { useRouter } from "next/router";
 import { signOut, useSession } from "next-auth/react";
 
 import {
-  Container,
-  Row,
-  Switch,
-  useTheme,
-  Spacer,
-  Grid,
-  Text,
-  Link,
   Button,
-  Loading,
+  Spinner,
+  Switch
 } from "@nextui-org/react";
 
 const Header: React.FC = () => {
-  const { setTheme } = useNextTheme();
-  const { isDark, type } = useTheme();
+  const { setTheme, theme } = useNextTheme();
   const router = useRouter();
 
   const { data: session, status } = useSession();
@@ -28,25 +20,17 @@ const Header: React.FC = () => {
   if (!session) {
     menu = (
       <Button
-        auto
-        rounded
-        shadow
         color="primary"
         onClick={() => router.push("/api/auth/signin")}
       >
         Login
       </Button>
     );
-  }
-
-  if (session) {
+  } else {
     menu = (
       <Button
-        borderWeight="bold"
-        auto
-        rounded
-        shadow
         color="primary"
+        variant="flat"
         onClick={() => signOut()}
       >
         Logout ({session?.user?.email})
@@ -56,37 +40,37 @@ const Header: React.FC = () => {
 
   if (status === "loading") {
     menu = (
-      <Button auto rounded shadow color="primary">
-        <Loading color="white" size="sm" />
+      <Button color="primary" isDisabled>
+        <Spinner color="white" size="sm" />
       </Button>
     );
   }
 
   return (
-    <>
-      <Spacer />
-      <Container xl>
-        <Row justify="center">
-          <Grid.Container gap={2} justify="center">
-            <Grid xs={6} justify="flex-start">
-              <Text h3>{process.env.NEXT_PUBLIC_APP_NAME}</Text>
-            </Grid>
-            <Grid xs={3} justify="flex-end"></Grid>
-            <Grid xs={3} justify="flex-end">
-              {menu}
-              <Spacer x={1} />
-              <Switch
-                onChange={(e) => setTheme(e.target.checked ? "dark" : "light")}
-                size="xl"
-                checked={isDark}
-                iconOn={<MdWbSunny />}
-                iconOff={<MdBedtime />}
-              />
-            </Grid>
-          </Grid.Container>
-        </Row>
-      </Container>
-    </>
+    <div className="py-4">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center">
+          <div className="flex-1">
+            <h3 className="text-2xl font-bold">{process.env.NEXT_PUBLIC_APP_NAME}</h3>
+          </div>
+          <div className="flex items-center gap-4">
+            {menu}
+            <Switch
+              onValueChange={(checked) => setTheme(checked ? "dark" : "light")}
+              size="lg"
+              isSelected={theme === "dark"}
+              thumbIcon={({ isSelected, className }) =>
+                isSelected ? (
+                  <MdWbSunny className={className} />
+                ) : (
+                  <MdBedtime className={className} />
+                )
+              }
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

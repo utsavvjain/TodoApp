@@ -1,5 +1,4 @@
 import React from "react";
-import { Text } from "@nextui-org/react";
 import { ITodoItem } from "../../../interfaces/ITodoItem";
 
 type Props = {
@@ -8,12 +7,12 @@ type Props = {
 
 const TodoCardItem = ({ data }: Props) => (
   <>
-    <Text h3 weight="bold" transform="uppercase" color="#ffffffAA">
+    <h3 className="text-lg font-bold uppercase text-white/70">
       {data.title}
-    </Text>
-    <Text h5 color="white">
+    </h3>
+    <h5 className="text-base text-white">
       {data.description}
-    </Text>
+    </h5>
   </>
 );
 

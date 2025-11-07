@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Button, Text, Modal, Input, Textarea } from "@nextui-org/react";
+import { 
+  Button, 
+  Modal, 
+  Input, 
+  Textarea, 
+  ModalContent, 
+  ModalHeader, 
+  ModalBody, 
+  ModalFooter,
+  useDisclosure 
+} from "@nextui-org/react";
 import { BiNotepad, BiSave, BiEdit } from "react-icons/bi";
 
 import { ITodoItem } from "../../../interfaces/ITodoItem";
@@ -8,13 +18,14 @@ import Router from "next/router";
 const TodoModal = ({ id, state, post }: any) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [visible, setVisible] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const openHandler = () => {
-    setVisible(true);
+    onOpen();
   };
+  
   const closeHandler = () => {
-    setVisible(false);
+    onClose();
   };
 
   const postItem = async (e: React.SyntheticEvent) => {
@@ -26,7 +37,7 @@ const TodoModal = ({ id, state, post }: any) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      setVisible(false);
+      onClose();
       await Router.push("/");
     } catch (error) {}
   };
@@ -40,82 +51,63 @@ const TodoModal = ({ id, state, post }: any) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      setVisible(false);
+      onClose();
       await Router.push("/");
     } catch (error) {}
   };
 
   return (
-    <Modal
-      key={id}
-      closeButton
-      blur
-      aria-labelledby="modal-title"
-      open={visible}
-      onClose={closeHandler}
-    >
-      <Modal.Header>
-        <Text id="modal-title" size={18}>
-          <Text b size={18}>
-            {post ? (
-              <Text>
-                <BiNotepad /> Add Todo
-              </Text>
-            ) : (
-              <Text>
-                <BiNotepad /> Edit Todo
-              </Text>
-            )}
-          </Text>
-        </Text>
-      </Modal.Header>
-      <Modal.Body>
-        <Input
-          clearable
-          bordered
-          fullWidth
-          color="primary"
-          size="lg"
-          placeholder="Title"
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <Textarea
-          bordered
-          fullWidth
-          color="primary"
-          size="lg"
-          cols={50}
-          rows={8}
-          placeholder="Description"
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </Modal.Body>
-      <Modal.Footer justify="center">
-        {post ? (
-          <Button
-            rounded
-            type="submit"
-            size="md"
-            onClick={postItem}
-            disabled={!description || !title}
-            icon={<BiSave size="25px" />}
-          >
-            Add
-          </Button>
-        ) : (
-          <Button
-            rounded
-            type="submit"
-            size="md"
-            onClick={updateItem}
-            disabled={!description || !title}
-            icon={<BiSave size="25px" />}
-          >
-            Edit
-          </Button>
-        )}
-      </Modal.Footer>
-    </Modal>
+    <>
+      <Button onPress={openHandler} color="primary" endContent={<BiNotepad />}>
+        {post ? "Add Todo" : "Edit Todo"}
+      </Button>
+      <Modal 
+        isOpen={isOpen} 
+        onClose={closeHandler}
+        placement="center"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex gap-1">
+                <BiNotepad />
+                {post ? "Add Todo" : "Edit Todo"}
+              </ModalHeader>
+              <ModalBody>
+                <Input
+                  placeholder="Title"
+                  variant="bordered"
+                  fullWidth
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+                <Textarea
+                  placeholder="Description"
+                  variant="bordered"
+                  fullWidth
+                  minRows={4}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button 
+                  color="primary" 
+                  onPress={() => post ? postItem({} as React.SyntheticEvent) : updateItem({} as React.SyntheticEvent)}
+                  isDisabled={!description || !title}
+                  endContent={<BiSave />}
+                >
+                  {post ? "Add" : "Save"}
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

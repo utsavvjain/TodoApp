@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Router, { useRouter } from "next/router";
-import { Card, Text, Col, Grid, Button } from "@nextui-org/react";
+import { Card, Button, CardHeader, CardBody, CardFooter, ButtonGroup } from "@nextui-org/react";
 import { BiTrash, BiEdit } from "react-icons/bi";
 
 import TodoCardItem from "./Card.Item";
@@ -20,48 +20,53 @@ async function deleteItem(id: number): Promise<void> {
 
 const TodoCard = ({ items }: Props) => {
   return (
-    <>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {items.map((item) => (
-        <Grid justify="flex-start" key={item.id} md={4}>
-          <Card hoverable shadow cover>
-            <Card.Header css={{ position: "absolute", zIndex: 1, top: 5 }}>
-              <Col>
-                <TodoCardItem data={item}></TodoCardItem>
-              </Col>
-            </Card.Header>
-            <Card.Footer
-              css={{
-                position: "absolute",
-                zIndex: 1,
-                bottom: 0,
-              }}
-            >
-              <Grid.Container gap={2} justify="center"></Grid.Container>
-              <Grid>
-                <Button.Group shadow auto rounded color="primary">
-                  {/* <Button
-                    onClick={() =>
-                      updateItem(item.id, item.title, item.description)
-                    }
-                    icon={<BiEdit size={"20px"}></BiEdit>}
-                  /> */}
-                  <Button
-                    onClick={() => deleteItem(item.id)}
-                    icon={<BiTrash size={"20px"}></BiTrash>}
-                  />
-                </Button.Group>
-              </Grid>
-            </Card.Footer>
-            <Card.Image
+        <Card 
+          key={item.id} 
+          isHoverable 
+          shadow="lg" 
+          className="relative"
+        >
+          <CardHeader className="absolute z-10 top-1 bg-black/40">
+            <div>
+              <TodoCardItem data={item}></TodoCardItem>
+            </div>
+          </CardHeader>
+          <CardBody className="p-0">
+            <img
               src="/background.jpg"
-              height={340}
-              width="100%"
               alt="Card image background"
+              className="object-cover w-full h-[340px]"
             />
-          </Card>
-        </Grid>
+          </CardBody>
+          <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+            <div className="flex gap-2">
+              <ButtonGroup>
+                {/* <Button
+                  onClick={() =>
+                    updateItem(item.id, item.title, item.description)
+                  }
+                  isIconOnly
+                  variant="flat"
+                  color="primary"
+                >
+                  <BiEdit size="20px" />
+                </Button> */}
+                <Button
+                  onClick={() => deleteItem(item.id)}
+                  isIconOnly
+                  variant="flat"
+                  color="danger"
+                >
+                  <BiTrash size="20px" />
+                </Button>
+              </ButtonGroup>
+            </div>
+          </CardFooter>
+        </Card>
       ))}
-    </>
+    </div>
   );
 };
 
