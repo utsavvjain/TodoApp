@@ -1,0 +1,25 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Node version:"
+        - node --version
+        - echo "NPM version:"
+        - npm --version
+        - npm ci
+        - echo "Generating Prisma client..."
+        - npx prisma generate
+    build:
+      commands:
+        - echo "Building application..."
+        - npm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/*
+  nodeVersion: 20
